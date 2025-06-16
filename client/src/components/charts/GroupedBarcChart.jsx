@@ -31,7 +31,7 @@ const GroupedBarChart = ({ data }) => {
 
     // Dynamic width
     const chartWidth = groups.length * barGroupWidth;
-    const chartHeight = 500 - margin.top - margin.bottom;
+    const chartHeight = 520 - margin.top - margin.bottom;
 
     const x0 = d3.scaleBand().domain(groups).range([0, chartWidth]).padding(0.2);
     const x1 = d3.scaleBand().domain(keys).range([0, x0.bandwidth()]).padding(0.05);

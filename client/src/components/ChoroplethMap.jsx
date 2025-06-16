@@ -6,7 +6,7 @@ const ChoroplethMap = ({ dominantTopicsByCountry }) => {
   const ref = useRef();
 
   useEffect(() => {
-    const width = 960;
+    const width = 1080;
     const height = 500;
 
     d3.select(ref.current).selectAll("*").remove();

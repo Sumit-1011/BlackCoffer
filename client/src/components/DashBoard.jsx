@@ -6,6 +6,7 @@ import ChoroplethChart from "./charts/ChoroplethChart";
 import GroupedBarChart from "./charts/GroupedBarcChart";
 import PestleChart from "./charts/PestleChart";
 import BubbleChart from "./charts/BubbleChart";
+import DataTable from "./charts/DataTable";
 
 function Dashboard() {
     const [data, setData] = useState([]);
@@ -30,6 +31,7 @@ function Dashboard() {
             <GroupedBarChart data={filteredData} />
             <PestleChart data={filteredData} />
             <BubbleChart data={filteredData} />
+            <DataTable data={filteredData} />
             {/* You can add more charts as needed */}
 
             {/* Add more charts as needed */}
