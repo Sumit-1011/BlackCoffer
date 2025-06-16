@@ -1,0 +1,9 @@
+- Economic
+- Environmental
+- Healthcare
+- Industries
+- Lifestyles
+- Organization
+- Political
+- Social
+- Technological

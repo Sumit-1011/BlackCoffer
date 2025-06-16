@@ -1,0 +1,23 @@
+ Africa
+- Asia
+- Central Africa
+- Central America
+- Central Asia
+- Eastern Africa
+- Eastern Asia
+- Eastern Europe
+- Europe
+- Northern Africa
+- Northern America
+- Northern Europe
+- Oceania
+- South America
+- South-Eastern Asia
+- Southern Africa
+- Southern Asia
+- Southern Europe
+- Western Africa
+- Western Asia
+- Western Europe
+- World
+- world
