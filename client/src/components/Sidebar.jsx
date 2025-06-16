@@ -3,7 +3,7 @@ import { BarChart2, LineChart, PieChart, LogOut } from "lucide-react";
 
 const Sidebar = () => {
   return (
-    <div className="fixed top-0 left-0 h-screen w-64 flex flex-col justify-between shadow-lg z-10">
+    <div className="fixed top-0 left-0 h-screen w-64 flex flex-col justify-between shadow-lg z-20">
 
       {/* Logo */}
       <div className="p-6 text-2xl font-bold border-b border-gray-700">

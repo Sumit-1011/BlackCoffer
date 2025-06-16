@@ -5,6 +5,7 @@ import IntensityPieChart from "./charts/IntensityPieChart";
 import ChoroplethChart from "./charts/ChoroplethChart";
 import GroupedBarChart from "./charts/GroupedBarcChart";
 import PestleChart from "./charts/PestleChart";
+import BubbleChart from "./charts/BubbleChart";
 
 function Dashboard() {
     const [data, setData] = useState([]);
@@ -28,6 +29,8 @@ function Dashboard() {
             <ChoroplethChart data={filteredData} />
             <GroupedBarChart data={filteredData} />
             <PestleChart data={filteredData} />
+            <BubbleChart data={filteredData} />
+            {/* You can add more charts as needed */}
 
             {/* Add more charts as needed */}
 
