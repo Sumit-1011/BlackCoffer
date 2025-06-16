@@ -1,9 +1,14 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState, useMemo } from "react";
 import * as d3 from "d3";
 import { feature } from "topojson-client";
 
 const ChoroplethMap = ({ dominantTopicsByCountry }) => {
   const ref = useRef();
+  const [selectedTopic, setSelectedTopic] = useState("All");
+
+  const allTopics = useMemo(() => {
+    return ["All", ...new Set(Object.values(dominantTopicsByCountry).filter(Boolean))];
+  }, [dominantTopicsByCountry]);
 
   useEffect(() => {
     const width = 1080;
@@ -18,7 +23,6 @@ const ChoroplethMap = ({ dominantTopicsByCountry }) => {
 
     const projection = d3.geoNaturalEarth1().scale(160).translate([width / 2, height / 2]);
     const path = d3.geoPath().projection(projection);
-
     const color = d3.scaleOrdinal(d3.schemeCategory10);
 
     d3.json("/world.json").then(worldData => {
@@ -32,7 +36,12 @@ const ChoroplethMap = ({ dominantTopicsByCountry }) => {
         .attr("fill", d => {
           const name = d.properties.name;
           const topic = dominantTopicsByCountry[name];
-          return topic ? color(topic) : "#f3f4f6"; // Tailwind gray-100 fallback
+
+          if (selectedTopic === "All") {
+            return topic ? color(topic) : "#f3f4f6"; // Show all topics
+          }
+
+          return topic === selectedTopic ? color(topic) : "#f3f4f6"; // Filtered view
         })
         .attr("stroke", "#ccc")
         .attr("stroke-width", 0.5)
@@ -43,13 +52,27 @@ const ChoroplethMap = ({ dominantTopicsByCountry }) => {
           return topic ? `${name}: ${topic}` : name;
         });
     });
-  }, [dominantTopicsByCountry]);
+  }, [dominantTopicsByCountry, selectedTopic]);
 
   return (
     <div className="w-fit my-6 shadow-md border rounded-md p-4">
       <h2 className="text-lg font-medium text-center mb-4">
         Choropleth Map of Dominant Topics by Country
       </h2>
+
+      <div className="mb-4 flex items-center gap-3">
+        <label className="font-medium">Filter by Topic:</label>
+        <select
+          className="border p-2 rounded"
+          value={selectedTopic}
+          onChange={(e) => setSelectedTopic(e.target.value)}
+        >
+          {allTopics.map(topic => (
+            <option key={topic} value={topic}>{topic}</option>
+          ))}
+        </select>
+      </div>
+
       <div ref={ref} />
     </div>
   );

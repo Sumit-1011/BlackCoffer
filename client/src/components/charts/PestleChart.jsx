@@ -1,21 +1,21 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useMemo } from "react";
 import * as d3 from "d3";
-
-const regions = [
-  "Africa", "Asia", "Europe", "Northern America", "South America", "Oceania"
-];
-
-const pestleOptions = [
-  "Economic", "Environmental", "Healthcare", "Industries",
-  "Lifestyles", "Organization", "Political", "Social", "Technological"
-];
 
 const MultiLineChartByPestle = ({ data }) => {
   const ref = useRef();
-  const [selectedPestle, setSelectedPestle] = useState("Economic");
+
+  const uniquePestles = useMemo(() => {
+    return [...new Set(data.map(d => d.pestle).filter(Boolean))];
+  }, [data]);
+
+  const uniqueRegions = useMemo(() => {
+    return [...new Set(data.map(d => d.region).filter(Boolean))];
+  }, [data]);
+
+  const [selectedPestle, setSelectedPestle] = useState("Industries");
 
   useEffect(() => {
-    drawChart();
+    if (data.length && selectedPestle) drawChart();
   }, [data, selectedPestle]);
 
   const drawChart = () => {
@@ -32,24 +32,23 @@ const MultiLineChartByPestle = ({ data }) => {
       .append("g")
       .attr("transform", `translate(${margin.left},${margin.top})`);
 
-    // Filter and group by region and year
     const filtered = data.filter(
-      (d) =>
+      d =>
         d.pestle === selectedPestle &&
         d.start_year &&
         !isNaN(+d.start_year) &&
         d.intensity &&
         !isNaN(+d.intensity) &&
-        regions.includes(d.region)
+        d.region
     );
 
-    const grouped = d3.groups(filtered, (d) => d.region);
+    const grouped = d3.groups(filtered, d => d.region);
 
     const lineData = grouped.map(([region, entries]) => {
       const yearMap = d3.rollup(
         entries,
-        (v) => d3.sum(v, (d) => +d.intensity),
-        (d) => +d.start_year
+        v => d3.sum(v, d => +d.intensity),
+        d => +d.start_year
       );
 
       return {
@@ -61,64 +60,53 @@ const MultiLineChartByPestle = ({ data }) => {
       };
     });
 
-    const allYears = [...new Set(filtered.map((d) => +d.start_year))].sort((a, b) => a - b);
+    const allYears = [...new Set(filtered.map(d => +d.start_year))].sort((a, b) => a - b);
 
     const x = d3.scaleLinear()
       .domain(d3.extent(allYears))
       .range([0, width]);
 
     const y = d3.scaleLinear()
-      .domain([
-        0,
-        d3.max(lineData, (r) => d3.max(r.values, (d) => d.intensity))
-      ])
+      .domain([0, d3.max(lineData, r => d3.max(r.values, d => d.intensity))])
       .range([height, 0]);
 
     const color = d3.scaleOrdinal()
-      .domain(regions)
+      .domain(uniqueRegions)
       .range(d3.schemeTableau10);
 
-    // X Axis
     chart.append("g")
       .attr("transform", `translate(0,${height})`)
       .call(d3.axisBottom(x).tickFormat(d3.format("d")));
 
-    // Y Axis
     chart.append("g").call(d3.axisLeft(y));
 
-    // Line generator
     const line = d3.line()
-      .x((d) => x(d.year))
-      .y((d) => y(d.intensity))
+      .x(d => x(d.year))
+      .y(d => y(d.intensity))
       .curve(d3.curveMonotoneX);
 
-    // Draw lines
     chart.selectAll(".line")
       .data(lineData)
       .enter()
       .append("path")
       .attr("fill", "none")
-      .attr("stroke", (d) => color(d.region))
+      .attr("stroke", d => color(d.region))
       .attr("stroke-width", 2)
-      .attr("d", (d) => line(d.values));
+      .attr("d", d => line(d.values));
 
-    // Add dots for tooltips (optional, enhances interactivity)
     chart.selectAll(".dots")
-      .data(lineData.flatMap(d =>
-        d.values.map(v => ({ ...v, region: d.region }))
-      ))
+      .data(lineData.flatMap(d => d.values.map(v => ({ ...v, region: d.region }))))
       .enter()
       .append("circle")
-      .attr("cx", (d) => x(d.year))
-      .attr("cy", (d) => y(d.intensity))
+      .attr("cx", d => x(d.year))
+      .attr("cy", d => y(d.intensity))
       .attr("r", 3)
-      .attr("fill", (d) => color(d.region))
+      .attr("fill", d => color(d.region))
       .append("title")
-      .text((d) => `${d.region} (${d.year}): ${d.intensity}`);
+      .text(d => `${d.region} (${d.year}): ${d.intensity}`);
 
-    // Legend
     const legend = chart.selectAll(".legend")
-      .data(regions)
+      .data(uniqueRegions)
       .enter()
       .append("g")
       .attr("transform", (d, i) => `translate(${width + 10}, ${i * 25})`);
@@ -126,12 +114,12 @@ const MultiLineChartByPestle = ({ data }) => {
     legend.append("rect")
       .attr("width", 12)
       .attr("height", 12)
-      .attr("fill", (d) => color(d));
+      .attr("fill", d => color(d));
 
     legend.append("text")
       .attr("x", 16)
       .attr("y", 10)
-      .text((d) => d)
+      .text(d => d)
       .style("font-size", "12px");
   };
 
@@ -143,9 +131,9 @@ const MultiLineChartByPestle = ({ data }) => {
         <select
           className="border p-2 rounded"
           value={selectedPestle}
-          onChange={(e) => setSelectedPestle(e.target.value)}
+          onChange={e => setSelectedPestle(e.target.value)}
         >
-          {pestleOptions.map((p) => (
+          {uniquePestles.map(p => (
             <option key={p} value={p}>{p}</option>
           ))}
         </select>

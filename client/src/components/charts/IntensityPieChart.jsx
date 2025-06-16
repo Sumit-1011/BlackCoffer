@@ -1,31 +1,38 @@
-import React, { useEffect, useRef, useMemo } from "react";
+import React, { useEffect, useRef, useMemo, useState } from "react";
 import * as d3 from "d3";
 
-const IntensityPieChart = ({ data }) => {
+const CountryTopicPieChart = ({ data }) => {
   const chartRef = useRef();
+  const [selectedTopic, setSelectedTopic] = useState("oil");
 
-  const topicAverages = useMemo(() => {
-    const grouped = {};
-
+  const topicOptions = useMemo(() => {
+    const topics = new Set();
     data.forEach(item => {
-      if (item.topic && item.intensity && item.intensity !== 0) {
-        if (!grouped[item.topic]) grouped[item.topic] = [];
-        grouped[item.topic].push(item.intensity);
-      }
+      if (item.topic) topics.add(item.topic);
     });
-
-    return Object.entries(grouped).map(([topic, intensities]) => ({
-      topic,
-      averageIntensity: d3.mean(intensities)
-    }));
+    return Array.from(topics);
   }, [data]);
 
-  useEffect(() => {
-    if (!topicAverages.length) return;
+  const countryCounts = useMemo(() => {
+    if (!selectedTopic) return [];
+    const counts = {};
+    data.forEach(item => {
+      if (item.topic === selectedTopic && item.country) {
+        counts[item.country] = (counts[item.country] || 0) + 1;
+      }
+    });
+    return Object.entries(counts).map(([country, count]) => ({
+      country,
+      count
+    }));
+  }, [data, selectedTopic]);
 
-    const width = 500;
-    const height = 500;
-    const radius = Math.min(width, height) / 2  ;
+  useEffect(() => {
+    if (!countryCounts.length) return;
+
+    const width = 450;
+    const height = 450;
+    const radius = Math.min(width, height) / 2;
 
     d3.select(chartRef.current).selectAll("*").remove();
 
@@ -35,31 +42,25 @@ const IntensityPieChart = ({ data }) => {
       .attr("height", height)
       .append("g")
       .attr("transform", `translate(${width / 2}, ${height / 2})`);
-      
-    
-      const gridGroup = svg.append("g").lower(); // pushes to the back
 
-        const lines = 12;
-        for (let i = 0; i < lines; i++) {
-        const angle = (2 * Math.PI / lines) * i;
-        const x = Math.cos(angle) * radius;
-        const y = Math.sin(angle) * radius;
+    const gridGroup = svg.append("g").lower();
+    const lines = 12;
+    for (let i = 0; i < lines; i++) {
+      const angle = (2 * Math.PI / lines) * i;
+      const x = Math.cos(angle) * radius;
+      const y = Math.sin(angle) * radius;
+      gridGroup.append("line")
+        .attr("x1", 0)
+        .attr("y1", 0)
+        .attr("x2", x)
+        .attr("y2", y)
+        .attr("stroke", "#e5e7eb")
+        .attr("stroke-dasharray", "3 2")
+        .attr("stroke-width", 1);
+    }
 
-        gridGroup.append("line")
-            .attr("x1", 0)
-            .attr("y1", 0)
-            .attr("x2", x)
-            .attr("y2", y)
-            .attr("stroke", "#e5e7eb") // Tailwind gray-200
-            .attr("stroke-dasharray", "3 2")
-            .attr("stroke-width", 1);
-        }
-
-    const color = d3.scaleOrdinal(d3.schemeTableau10);
-
-    const pie = d3.pie().value(d => d.averageIntensity);
-    const data_ready = pie(topicAverages);
-
+    const color = d3.scaleOrdinal(d3.schemeSet2);
+    const pie = d3.pie().value(d => d.count);
     const arc = d3.arc().innerRadius(0).outerRadius(radius);
 
     const tooltip = d3.select("body")
@@ -68,18 +69,20 @@ const IntensityPieChart = ({ data }) => {
       .style("opacity", 0)
       .style("pointer-events", "none");
 
+    const data_ready = pie(countryCounts);
+
     svg.selectAll("path")
       .data(data_ready)
       .enter()
       .append("path")
       .attr("d", arc)
-      .attr("fill", d => color(d.data.topic))
+      .attr("fill", d => color(d.data.country))
       .style("opacity", 0.8)
       .on("mouseover", function (event, d) {
         d3.select(this).style("opacity", 1);
         tooltip
           .style("opacity", 1)
-          .html(`<strong>${d.data.topic}</strong><br/>Avg Intensity: ${d.data.averageIntensity.toFixed(2)}`);
+          .html(`<strong>${d.data.country}</strong><br/>Count: ${d.data.count}`);
       })
       .on("mousemove", event => {
         tooltip
@@ -91,14 +94,27 @@ const IntensityPieChart = ({ data }) => {
         tooltip.style("opacity", 0);
       });
 
-  }, [topicAverages]);
+  }, [countryCounts]);
 
   return (
     <div className="flex flex-col gap-2 justify-center items-center w-fit h-fit border border-gray-300 rounded-lg p-4 shadow-md my-6 ">
-      <h2 className="text-2xl font-semibold">Average Intesity per Topic</h2>
+      <h2 className="text-2xl font-semibold mb-2">Country-wise Topic Distribution</h2>
+      <label className="mb-2">
+        <span className="mr-2 text-sm font-medium">Select Topic:</span>
+        <select
+          className="border border-gray-300 rounded px-2 py-1"
+          value={selectedTopic}
+          onChange={e => setSelectedTopic(e.target.value)}
+        >
+          <option value="">--Select--</option>
+          {topicOptions.map(topic => (
+            <option key={topic} value={topic}>{topic}</option>
+          ))}
+        </select>
+      </label>
       <div ref={chartRef}></div>
     </div>
   );
 };
 
-export default IntensityPieChart;
+export default CountryTopicPieChart;

@@ -25,17 +25,20 @@ function Dashboard() {
 
             {/* FilterPanel will go here */}
             {/* Charts will go here */}
+            <div className=" justify-between flex flex-col sm:flex-row gap-4 mb-6">
             <IntensityChart data={filteredData} />
             <IntensityPieChart data={filteredData} />
+            </div>
+            
             <ChoroplethChart data={filteredData} />
             <GroupedBarChart data={filteredData} />
             <PestleChart data={filteredData} />
             <BubbleChart data={filteredData} />
             <DataTable data={filteredData} />
-            {/* You can add more charts as needed */}
-
-            {/* Add more charts as needed */}
-
+           
+            <div className="mt-10 text-center text-sm text-gray-600 font-semibold">
+                Made with ❤️ by Sumit for BlackCoffer &copy; 2025
+            </div>
         </div>
     );
 }
