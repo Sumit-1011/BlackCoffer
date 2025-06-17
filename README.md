@@ -37,8 +37,8 @@ Before you begin, ensure you have the following installed:
 Clone the repository and install the dependencies:
 
 ```bash
-git clone https://github.com/your-username/blackcoffer-dashboard.git
-cd blackcoffer-dashboard
+git clone [https://github.com/Sumit-1011/BlackCoffer.git](https://github.com/Sumit-1011/BlackCoffer.git)
+cd BlackCoffer
 ```
 
 #### Install frontend dependencies:
@@ -46,8 +46,6 @@ cd blackcoffer-dashboard
 ```bash
 cd client
 npm install
-# or
-yarn install
 ```
 
 #### Install backend dependencies:
@@ -55,8 +53,6 @@ yarn install
 ```bash
 cd ../server
 npm install
-# or
-yarn install
 ```
 
 ### ⚙️ Environment Setup
@@ -78,9 +74,7 @@ MONGODB_URI=mongodb://localhost:27017/blackcoffer
 
 ```bash
 cd server
-npm run dev
-# or
-yarn dev
+node index.js
 ```
 
 ### Start Frontend:
@@ -88,8 +82,6 @@ yarn dev
 ```bash
 cd client
 npm run dev
-# or
-yarn dev
 ```
 
 The app will run on `http://localhost:5173` and the API on `http://localhost:5000`.
