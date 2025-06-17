@@ -1,10 +1,11 @@
 import React, { useEffect, useRef, useState, useMemo } from "react";
 import * as d3 from "d3";
 
-const MultiLineChartByPestle = ({ data }) => {
+const PestleChart = ({ data = []}) => {
   const ref = useRef();
 
   const uniquePestles = useMemo(() => {
+    if (!data || !Array.isArray(data)) return [];
     return [...new Set(data.map(d => d.pestle).filter(Boolean))];
   }, [data]);
 
@@ -146,4 +147,4 @@ const MultiLineChartByPestle = ({ data }) => {
   );
 };
 
-export default MultiLineChartByPestle;
+export default PestleChart;

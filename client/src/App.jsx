@@ -1,12 +1,26 @@
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Dashboard from "./components/DashBoard";
 import Sidebar from "./components/Sidebar";
+import ChoroplethMapPage from "./pages/ChorplethMapPage";
+import DataTablePage from "./pages/TablesPage";
+import GroupBarPage from "./pages/GroupBarPage";
 
-function App() {
+const App = () =>{
   return (
-    <div className="bg-gray-100 min-h-screen pl-64">
+  
+    <Router>
+    <div className="min-h-screen pl-64 my-4">
       <Sidebar/>
-      <Dashboard />
-    </div>
+      <Routes>
+          <Route path="/" element={<Dashboard />} />
+          <Route path="/group-bar-chart" element={<GroupBarPage />} />
+            <Route path="/map" element={<ChoroplethMapPage />} />
+            <Route path="/tables" element={<DataTablePage />} />
+            {/* Add routes for other charts here */}
+      </Routes>
+      </div>
+      </Router>
+
   );
 }
 

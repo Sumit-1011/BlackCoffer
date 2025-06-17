@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from "react";
 
 const DataTable = ({ data }) => {
+  console.log("DataTable rendered with data:", data);
   const [searchText, setSearchText] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
@@ -29,6 +30,7 @@ const DataTable = ({ data }) => {
 
   return (
     <div className="p-4 bg-white shadow-md rounded-md my-2">
+      <h1 className="text-3xl font-bold mb-4 text-center">Data Table for Insights</h1>
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
         <input
           type="text"
